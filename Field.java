@@ -15,9 +15,9 @@ public class Field {
 
     public static final int DEFOLT_FIELD_SIZE = 3;
 
-    //public final int  DEFOLT_WIN_SIZE = 3;
+    public final int DEFOLT_WIN_SIZE = 3;
 
-    //public final int WIN_SIZE = 5;
+    public final int WIN_SIZE = 5;
 
     public char[][] Field;
 
@@ -36,12 +36,11 @@ public class Field {
     public Field(int size) {
         fieldSize = size;
         Field = new char[fieldSize][fieldSize];
-        /*if (fieldSize == DEFOLT_FIELD_SIZE) {
+        if (fieldSize == DEFOLT_FIELD_SIZE) {
             winSize = DEFOLT_WIN_SIZE;
-        }
-        else{
+        } else {
             winSize = WIN_SIZE;
-        }*/
+        }
     }
 
     public void playGame() throws IOException {
@@ -96,7 +95,6 @@ public class Field {
             System.out.println("Неверный ввод.");
             doStep(step);
         }
-
     }
 
     public void isEmptyField(int x, int y, char step) throws IOException {
@@ -176,6 +174,14 @@ public class Field {
         }
     }
 
+    public void testWinCombinatoin(char[] ch, char step) {
+        if (ch[0] != '\u0000' & ch[1] != '\u0000' & ch[2] != '\u0000' & ch[3] != '\u0000' & ch[4] != '\u0000') {
+            if (ch[0] == ch[1] & ch[1] == ch[2] & ch[2] == ch[3] & ch[3] == ch[4]) {
+                printWinner(step);
+            }
+        }
+    }
+
     public void printWinner(char step) {
         if (step == 'X') {
             System.out.println(GAMER1 + " победил");
@@ -193,33 +199,51 @@ public class Field {
             }
         }
     }
-}
-   /* public void testWinLine2(char[][] ch, char step) {
+
+    public void testWinLine2(char[][] ch, char step) {
+        char[] winArray = new char[ch.length]; //массив из всех элементов строки
         for (int i = 0; i < ch.length; i++) {
-            char[] winArray = new char[ch.length]; //массив из всех элементов строки
-            for (int j =0; j < ch.length; j++){
+            for (int j = 0; j < ch.length; j++) {
                 winArray[j] = ch[j][i];
             }
-            if (winSize == DEFOLT_WIN_SIZE){
-                if (winArray[0] != '\u0000' & winArray[1] != '\u0000' & winArray[2] != '\u0000') {
-                    if (winArray[0] == winArray[1] && winArray[1] == winArray[2]) {
-                        printWinner(step);
-                    }
+        }
+        if (winSize == DEFOLT_WIN_SIZE) {
+            testWinCombinatoin(winArray[0], winArray[1], winArray[2], step);
+        } else {
+            char[] winComb = new char[WIN_SIZE];//массив из пяти подряд идущих элементов массива winArray
+            int j = 0;
+            while (j < (ch.length - WIN_SIZE)) {
+                for (int k = 0; k < WIN_SIZE; k++) {
+                    winComb[k] = winArray[j + k];
                 }
-            }
-            else {
-                char[] winComb = new char[WIN_SIZE];
-                int j = 0;
-                while (j < (ch.length - WIN_SIZE)){
-                    for (int i = 0; i < WIN_SIZE; i++){
-                         winComb[i] = winArray[j + i];
-                    }
-                    winComb.testWinComb5();
-                    j++;
-                }
+                testWinCombinatoin(winComb, step);
+                j++;
             }
         }
-   }*/
+    }
+
+    public void testWinColum2(char[][] ch, char step) {
+        char[] winArray = new char[ch.length]; //массив из всех элементов столбца
+        for (int i = 0; i < ch.length; i++) {
+            for (int j = 0; j < ch.length; j++) {
+                winArray[j] = ch[i][j];
+            }
+        }
+        if (winSize == DEFOLT_WIN_SIZE) {
+            testWinCombinatoin(winArray[0], winArray[1], winArray[2], step);
+        } else {
+            char[] winComb = new char[WIN_SIZE];//массив из пяти подряд идущих элементов массива winArray
+            int j = 0;
+            while (j < (ch.length - WIN_SIZE)) {
+                for (int k = 0; k < WIN_SIZE; k++) {
+                    winComb[k] = winArray[j + k];
+                }
+                testWinCombinatoin(winComb, step);
+                j++;
+            }
+        }
+    }
+}
 //                6     8     10
 // 00 10 20 30 40 50 60 70 80 90
 // 01 11 21 31 41 51 61 71 81 91
