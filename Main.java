@@ -7,10 +7,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Field field = new Field(3);
-        //field.showField();
-        //field.playGame();
-        field.arrayOfDiagonal4();
-        field.arrayOfDiagonal3();
+        field.showField();
+        field.playGame();
 
 
     }
