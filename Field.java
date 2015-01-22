@@ -61,7 +61,6 @@ public class Field {
         System.out.print("Введите номер столбца: ");
         int y = inputXY(step);
         System.out.println();
-        ;
         isEmptyField(x, y, step);
         Field[x][y] = step;
         showField();
@@ -71,6 +70,10 @@ public class Field {
     public int inputXY(char step) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String s = reader.readLine();
+        if (s.isEmpty()) {
+            System.out.println("Неверный ввод. Повторите:");
+            doStep(step);
+        }
         isDigitInput(s, step);
         int i = Integer.parseInt(s);
         illegalInput(i, step);
@@ -169,9 +172,9 @@ public class Field {
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize; j++) {
                 winArray[j] = Field[j][i];
-                test(winArray, step);
                 //System.out.print(j + "" + i + " ");
             }
+            test(winArray, step);
             //System.out.println();
         }
     }
@@ -185,7 +188,7 @@ public class Field {
 
     }
 
-    //выборка из массива строки/столбца/диагонали
+    //выборка из массива элементов строки/столбца/диагонали
     // пяти подряд идущих элементов на проверку на выйгрышность
     public void testWinInArray(char[] ch, char step) {
         char[] winComb = new char[WIN_SIZE];//массив из пяти подряд идущих элементов массива winArray
@@ -199,17 +202,18 @@ public class Field {
         }
     }
 
-    //проверка столбцов на выйгрышную комбинацию для стандартного и большого поля
+    //проверка столбцов на выйгрышную комбинацию для всех размеров поля
     public void testWinColum(char step) {
         char[] winArray = new char[fieldSize]; //массив из всех элементов одного столбца
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize; j++) {
                 winArray[j] = Field[i][j];
-                test(winArray, step);
             }
+            test(winArray, step);
         }
     }
 
+    //для стандартного поля только проверка диагоналей 2 и 3
     public void testWinDiagonal(char step) {
         if (fieldSize == DEFOLT_FIELD_SIZE) {
             arrayOfDiagonal2(step);
@@ -248,12 +252,12 @@ public class Field {
             for (int i = (fieldSize - 1); i >= k; i--) {
                 while (j < (fieldSize)) {
                     winArray[j - k] = Field[i][j];
-                    testWinInArray(winArray, step);
                     //System.out.print(i + "" + j + " ");
                     j++;
                     break;
                 }
             }
+            test(winArray, step);
             //System.out.println();
         }
     }
@@ -267,11 +271,11 @@ public class Field {
                 while (j < (fieldSize - k)) {
                     winArray[j] = Field[i][j];
                     //System.out.print(i + "" + j);
-                    testWinInArray(winArray, step);
                     j++;
                     break;
                 }
             }
+            test(winArray, step);
             //System.out.println();
         }
     }
@@ -284,12 +288,12 @@ public class Field {
             for (int i = 0; i < (fieldSize - k); i++) {
                 while (j < (fieldSize)) {
                     winArray[j - k] = Field[i][j];
-                    testWinInArray(winArray, step);
-                    System.out.print(i + "" + j + " ");
+                    //System.out.print(i + "" + j + " ");
                     j++;
                     break;
                 }
             }
+            test(winArray, step);
             //System.out.println();
         }
     }
