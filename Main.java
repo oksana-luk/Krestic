@@ -1,7 +1,9 @@
 import java.io.IOException;
 
-/**
- * Created by Оксана on 18.11.2014.
+/*1
+0
+1
+ Created by Оксана on 18.11.2014.
  */
 public class Main {
 
@@ -9,7 +11,5 @@ public class Main {
         Field field = new Field(6);
         field.showField();
         field.playGame();
-
-
     }
 }

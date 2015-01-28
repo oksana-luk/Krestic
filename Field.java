@@ -2,8 +2,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/**
- * Created by Оксана on 18.11.2014.
+/*
+  Created by Оксана on 18.11.2014.
  */
 public class Field {
 
@@ -25,6 +25,10 @@ public class Field {
 
     public static final char KRESTIK = 'X';
 
+    public static char step;
+
+    public static int counter = 2;
+
     public static final char NOLIK = 'O';
 
     public Field() {
@@ -34,7 +38,7 @@ public class Field {
     public Field(int size) {
         fieldSize = size;
         Field = new char[fieldSize][fieldSize];
-        if (fieldSize == DEFOLT_FIELD_SIZE) {
+        if (fieldSize == DEFOLT_FIELD_SIZE | fieldSize == (DEFOLT_FIELD_SIZE + 1)) {
             winSize = DEFOLT_WIN_SIZE;
         } else {
             winSize = WIN_SIZE;
@@ -42,73 +46,73 @@ public class Field {
     }
 
     public void playGame() throws IOException {
-        for (int k = 2; k <= fieldSize * fieldSize + 1; k++) {
+        for (int k = counter; k <= fieldSize * fieldSize + 1; k++) {
             if ((k & 1) == 0) {
                 System.out.println(GAMER1 + ", ваш ход.");
-                doStep(KRESTIK);
+                //System.out.println("Счетчик = " + counter);
+                step = KRESTIK;
+                doStep();
+                counter++;
             } else {
                 System.out.println(GAMER2 + ", ваш ход.");
-                doStep(NOLIK);
+                //System.out.println("Счетчик = " + counter);
+                step = NOLIK;
+                doStep();
+                counter++;
             }
         }
         System.out.print("Ничья");
         System.exit(0);
     }
 
-    public void doStep(char step) throws IOException {
+    public void doStep() throws IOException {
         System.out.print("Введите номер строки: ");
-        int x = inputXY(step);
+        int x = inputXY();
         System.out.print("Введите номер столбца: ");
-        int y = inputXY(step);
-        System.out.println();
-        isEmptyField(x, y, step);
+        int y = inputXY();
+        isEmptyField(x, y);
         Field[x][y] = step;
         showField();
-        testWin(step);
+        testWin();
     }
 
-    public int inputXY(char step) throws IOException {
+    public int inputXY() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String s = reader.readLine();
         if (s.isEmpty()) {
-            System.out.println("Неверный ввод. Повторите:");
-            doStep(step);
+            System.out.println("Вы ничего не ввели.");
+            playGame();
         }
-        isDigitInput(s, step);
+        isDigitInput(s);
         int i = Integer.parseInt(s);
-        illegalInput(i, step);
+        illegalInput(i);
         return i;
     }
 
     //пррверка ввода на цифры
-    public void isDigitInput(String s, char step) throws IOException {
+    public void isDigitInput(String s) throws IOException {
         char[] input = s.toCharArray();
         char ch1 = input[0];
-        if (Character.isDigit(ch1)) {
-            return;
-        } else {
-            System.out.println("Неверный ввод. Повторите:");
-            doStep(step);
+        if (!Character.isDigit(ch1)) {
+            System.out.println("Неверный ввод. Символы недопустимы.");
+            playGame();
         }
     }
 
     //проверка ввода на допустимый диапазон кординат ячеек
-    public void illegalInput(int k, char step) throws IOException {
-        if (k >= 0 & k < fieldSize) {
-            return;
-        } else {
-            System.out.println("Неверный ввод.");
-            doStep(step);
+    public void illegalInput(int k) throws IOException {
+        if (k < 0 | k >= fieldSize) {
+            System.out.println("Неверный ввод. Диапазон недопустимых чисел.");
+            playGame();
         }
+
     }
 
     //проверка свободна ли ячейка
-    public void isEmptyField(int x, int y, char step) throws IOException {
-        if (Field[x][y] == '\u0000') {
-            return;
-        } else {
+    public void isEmptyField(int x, int y) throws IOException {
+        if (Field[x][y] != '\u0000') {
             System.out.println("Занято!");
-            doStep(step);
+            playGame();
         }
     }
 
@@ -128,27 +132,27 @@ public class Field {
     }
 
     //запуск проверки на выйгрышные комбинации
-    public void testWin(char step) {
-        testWinLine(step);
-        testWinColum(step);
-        testWinDiagonal(step);
+    public void testWin() {
+        testWinLine();
+        testWinColum();
+        testWinDiagonal();
     }
 
     //проверка пяти/трех элементов на равенство(победу)
-    public void testWinCombination(char[] ch, char step) {
+    public void testWinCombination(char[] ch) {
         if (fieldSize == DEFOLT_FIELD_SIZE) {
             if (ch[0] == step && ch[0] == ch[1] && ch[1] == ch[2]) {
-                printWinner(step);
+                printWinner();
             }
         } else {
             if (ch[0] == step && ch[0] == ch[1] && ch[1] == ch[2] && ch[2] == ch[3] && ch[3] == ch[4]) {
-                printWinner(step);
+                printWinner();
             }
         }
     }
 
     // вывести на экран победителя
-    public void printWinner(char step) {
+    public void printWinner() {
         if (step == KRESTIK) {
             System.out.println(GAMER1 + " победил!");
             System.exit(0);
@@ -158,86 +162,85 @@ public class Field {
         }
     }
 
-    public void erazeField() {
+    /*public void erazeField() {
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize; j++) {
                 Field[i][j] = ' ';
             }
         }
-    }
+    }*/
 
     //проверка строк на выйгрышную комбинацию для стандартного и большого поля
-    public void testWinLine(char step) {
+    public void testWinLine() {
         char[] winArray = new char[fieldSize]; //массив из всех элементов одной строки
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize; j++) {
                 winArray[j] = Field[j][i];
                 //System.out.print(j + "" + i + " ");
             }
-            test(winArray, step);
+            test(winArray);
             //System.out.println();
         }
     }
 
-    public void test(char[] ch, char step) {
+    public void test(char[] ch) {
         if (fieldSize == DEFOLT_FIELD_SIZE) {
-            testWinCombination(ch, step);
+            testWinCombination(ch);
         } else {
-            testWinInArray(ch, step);
+            testWinInArray(ch);
         }
 
     }
 
     //выборка из массива элементов строки/столбца/диагонали
     // пяти подряд идущих элементов на проверку на выйгрышность
-    public void testWinInArray(char[] ch, char step) {
+    public void testWinInArray(char[] ch) {
         char[] winComb = new char[WIN_SIZE];//массив из пяти подряд идущих элементов массива winArray
         int j = 0;
         while (j <= (ch.length - WIN_SIZE)) {
             for (int k = 0; k < WIN_SIZE; k++) {
                 winComb[k] = ch[j + k];
             }
-            testWinCombination(winComb, step);
+            testWinCombination(winComb);
             j++;
         }
     }
 
     //проверка столбцов на выйгрышную комбинацию для всех размеров поля
-    public void testWinColum(char step) {
+    public void testWinColum() {
         char[] winArray = new char[fieldSize]; //массив из всех элементов одного столбца
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize; j++) {
                 winArray[j] = Field[i][j];
             }
-            test(winArray, step);
+            test(winArray);
         }
     }
 
     //для стандартного поля только проверка диагоналей 2 и 3
-    public void testWinDiagonal(char step) {
+    public void testWinDiagonal() {
         if (fieldSize == DEFOLT_FIELD_SIZE) {
-            arrayOfDiagonal2(step);
-            arrayOfDiagonal3(step);
+            arrayOfDiagonal2();
+            arrayOfDiagonal3();
         } else {
-            arrayOfDiagonal1(step);
-            arrayOfDiagonal2(step);
-            arrayOfDiagonal3(step);
-            arrayOfDiagonal4(step);
+            arrayOfDiagonal1();
+            arrayOfDiagonal2();
+            arrayOfDiagonal3();
+            arrayOfDiagonal4();
         }
     }
 
     //проверка части 1 диагоналей из правого верхнего угла на выйгрышную комбинацию для всех размеров поля
-    public void arrayOfDiagonal1(char step) {//(k=winSize-1; k< fieldSize; k++) (i=k;i>=0;i--)(j=0;j<=k;j++)
+    public void arrayOfDiagonal1() {//(k=winSize-1; k< fieldSize; k++) (i=k;i>=0;i--)(j=0;j<=k;j++)
         for (int k = (winSize - 1); k < (fieldSize - 1); k++) {
             char[] winArray = new char[k + 1];//массив из элементов поля по одной диагонали
             int j = 0;
             for (int i = k; i >= 0; i--) {
-                while (j <= k) {
+                if (j <= k) {
                     winArray[j] = Field[i][j];
-                    testWinInArray(winArray, step);
+                    testWinInArray(winArray);
                     //System.out.print(i + "" + j);
                     j++;
-                    break;
                 }
             }
             //System.out.println(1);
@@ -245,58 +248,58 @@ public class Field {
     }
 
     //проверка части 2 диагоналей из правого верхнего угла на выйгрышную комбинацию для всех размеров поля
-    public void arrayOfDiagonal2(char step) {//(k=0; k <= (fieldSize-winSize); k++) (i=fieldSize-1; i>=k; i--) (j=k; j<fieldSize;j++)
+    public void arrayOfDiagonal2() {//(k=0; k <= (fieldSize-winSize); k++) (i=fieldSize-1; i>=k; i--) (j=k; j<fieldSize;j++)
         for (int k = 0; k <= (fieldSize - winSize); k++) {
             char[] winArray = new char[fieldSize - k];//массив из элементов поля по одной диагонали
             int j = k;
             for (int i = (fieldSize - 1); i >= k; i--) {
-                while (j < (fieldSize)) {
+                if (j < (fieldSize)) {
                     winArray[j - k] = Field[i][j];
                     //System.out.print(i + "" + j + " ");
                     j++;
-                    break;
                 }
             }
-            test(winArray, step);
+            test(winArray);
             //System.out.println();
         }
     }
 
     //проверка части 3 диагоналей из левого верхнего угла на выйгрышную комбинацию для всех размеров поля
-    public void arrayOfDiagonal3(char step) {//(k=fieldSize-win_size; k >= 0; k--)(i=k;i<fieldSize;i++)(j=0;j<fieldSize-k;j++)
+    public void arrayOfDiagonal3() {//(k=fieldSize-win_size; k >= 0; k--)(i=k;i<fieldSize;i++)(j=0;j<fieldSize-k;j++)
         for (int k = (fieldSize - winSize); k >= 0; k--) {
             char[] winArray = new char[fieldSize - k];//массив из элементов поля по одной диагонали
             int j = 0;
             for (int i = k; i < fieldSize; i++) {
-                while (j < (fieldSize - k)) {
+                if (j < (fieldSize - k)) {
                     winArray[j] = Field[i][j];
                     //System.out.print(i + "" + j);
                     j++;
-                    break;
                 }
             }
-            test(winArray, step);
+            test(winArray);
             //System.out.println();
         }
     }
 
     //проверка части 4 диагоналей из левого верхнего угла на выйгрышную комбинацию для всех размеров поля
-    public void arrayOfDiagonal4(char step) {//(k=5;k>=0;k--)(i=0;i<fieldSize-k;i++) (j=k;j<fieldsize;j++)
+    public void arrayOfDiagonal4() {//(k=5;k>=0;k--)(i=0;i<fieldSize-k;i++) (j=k;j<fieldsize;j++)
         for (int k = (fieldSize - winSize); k > 0; k--) {
             char[] winArray = new char[fieldSize - k];//массив из элементов поля по одной диагонали
             int j = k;
             for (int i = 0; i < (fieldSize - k); i++) {
-                while (j < (fieldSize)) {
+                if (j < (fieldSize)) {
                     winArray[j - k] = Field[i][j];
                     //System.out.print(i + "" + j + " ");
                     j++;
-                    break;
                 }
             }
-            test(winArray, step);
+            test(winArray);
             //System.out.println();
         }
     }
+
+    /*public void playGameAgain() throws IOException {
+    }*/
 }
 //       3x3      6x6   8x8  10x10
 // 00 10 20 30 40 50 60 70 80 90
